@@ -124,6 +124,8 @@ GLuint create_shader_program ()
         fprintf(stderr, "error: create_shader_program: shader link error - \n%s\n", infoLog);
         return 0;
     }
+
+    return program;
 }
 
 void display ()
@@ -154,6 +156,8 @@ int main (int argc, char **argv)
     // INITIALIZATION //
     // initialize glfw
     glfwInit();
+    glfwWindowHint(GLFW_WINDOW_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_WINDOW_VERSION_MINOR, 3);
 
     // get a glfw window
     GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL", NULL, NULL);
