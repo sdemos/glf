@@ -16,16 +16,18 @@
 #define WINDOW_HEIGHT 600
 
 GLfloat triangleVertices[] = {
-    -0.5f, -0.5f,  0.0f,
-     0.5f, -0.5f,  0.0f,
-     0.0f,  0.5f,  0.0f
+    // Positions         // Colors
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // Bottom Right
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // Bottom Left
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // Top
 };
 
 GLfloat rectVertices[] = {
-     0.5f,  0.5f, 0.0f,  // Top Right
-     0.5f, -0.5f, 0.0f,  // Bottom Right
-    -0.5f, -0.5f, 0.0f,  // Bottom Left
-    -0.5f,  0.5f, 0.0f   // Top Left
+    // Positions
+     0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // Top Right
+     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // Bottom Right
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   // Bottom Left
+    -0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 0.0f    // Top Left
 };
 
 GLuint rectIndices[] = {
@@ -53,7 +55,7 @@ char *get_file_contents (const char *filepath)
     rewind(fp);
 
     // allocate a buffer with our newfound knowledge
-    buffer = malloc(file_size + 1);
+    buffer = calloc(1, file_size + 1);
     if (!buffer) {
         perror("error: get_file_contents: buffer malloc");
         fprintf(stderr, "error: get_file_contents: buffer malloc problem child: %s\n", filepath);
@@ -118,8 +120,12 @@ GLuint create_shader_program (char *vert_file, char *frag_file)
     GLchar infoLog[512];
 
     // compile the vertex and fragment shaders
-    vert = compile_shader(vert_file, GL_VERTEX_SHADER);
-    frag = compile_shader(frag_file, GL_FRAGMENT_SHADER);
+    if (!(vert = compile_shader(vert_file, GL_VERTEX_SHADER))
+     || !(frag = compile_shader(frag_file, GL_FRAGMENT_SHADER))) {
+        // compile shader should've printed out a more detailed error
+        // so just throw this back up to the caller
+        return 0;
+    }
 
     // create a new program to link the shaders to
     program = glCreateProgram();
@@ -152,10 +158,10 @@ void display (GLuint program, GLuint VAO)
     glClear(GL_COLOR_BUFFER_BIT);
 
     // update the uniform color
-    GLfloat timeValue = glfwGetTime();
-    GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
-    GLint ourColorLocation = glGetUniformLocation(program, "ourColor");
-    glUniform4f(ourColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+    //GLfloat timeValue = glfwGetTime();
+    //GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
+    //GLint ourColorLocation = glGetUniformLocation(program, "ourColor");
+    //glUniform4f(ourColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
     // bind the VAO we want to use
     glBindVertexArray(VAO);
@@ -208,7 +214,11 @@ int main (int argc, char **argv)
     glfwSetKeyCallback(window, keyboard);
 
     // compile (and link) shaders!
-    program = create_shader_program("shaders/shader.vert", "shaders/shader.frag");
+    if (!(program = create_shader_program("shaders/shader.vert", "shaders/shader.frag"))) {
+        // any errors in create_shader_program print out detailed error messages
+        // so just throw up instead.
+        return 0;
+    }
 
     // set up the buffers
     GLuint VAO, VBO, EBO;
@@ -225,8 +235,15 @@ int main (int argc, char **argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectIndices), rectIndices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) 0);
-    glEnableVertexAttribArray(0);
+#define POSITION_LOC 0
+#define COLOR_LOC 1
+    // Position attribute information
+    glVertexAttribPointer(POSITION_LOC, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) 0);
+    glEnableVertexAttribArray(POSITION_LOC);
+
+    // Color attribute information
+    glVertexAttribPointer(COLOR_LOC, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(COLOR_LOC);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
