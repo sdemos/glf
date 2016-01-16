@@ -20,6 +20,18 @@ GLfloat triangleVertices[] = {
      0.0f,  0.5f,  0.0f
 };
 
+GLfloat rectVertices[] = {
+     0.5f,  0.5f, 0.0f,  // Top Right
+     0.5f, -0.5f, 0.0f,  // Bottom Right
+    -0.5f, -0.5f, 0.0f,  // Bottom Left
+    -0.5f,  0.5f, 0.0f   // Top Left
+};
+
+GLuint rectIndices[] = {
+    0, 1, 3
+  , 1, 2, 3
+};
+
 char *get_file_contents (const char *filepath)
 {
     FILE *fp;
@@ -98,15 +110,15 @@ GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
     return shader;
 }
 
-GLuint create_shader_program ()
+GLuint create_shader_program (char *vert_file, char *frag_file)
 {
     GLuint vert, frag, program;
     GLint success;
     GLchar infoLog[512];
 
     // compile the vertex and fragment shaders
-    vert = compile_shader("shaders/shader.vert", GL_VERTEX_SHADER);
-    frag = compile_shader("shaders/shader.frag", GL_FRAGMENT_SHADER);
+    vert = compile_shader(vert_file, GL_VERTEX_SHADER);
+    frag = compile_shader(frag_file, GL_FRAGMENT_SHADER);
 
     // create a new program to link the shaders to
     program = glCreateProgram();
@@ -128,17 +140,18 @@ GLuint create_shader_program ()
     return program;
 }
 
-void display ()
+void display (GLuint VAO)
 {
     // set background color
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // set up the VBO
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+    // bind the VAO we want to use
+    glBindVertexArray(VAO);
+    // draw the object
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // unbind the VAO
+    glBindVertexArray(0);
 }
 
 void keyboard (GLFWwindow *window, int key, int scancode, int action, int mode)
@@ -156,8 +169,10 @@ int main (int argc, char **argv)
     // INITIALIZATION //
     // initialize glfw
     glfwInit();
-    glfwWindowHint(GLFW_WINDOW_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_WINDOW_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // get a glfw window
     GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL", NULL, NULL);
@@ -182,7 +197,29 @@ int main (int argc, char **argv)
     glfwSetKeyCallback(window, keyboard);
 
     // compile (and link) shaders!
-    program = create_shader_program();
+    program = create_shader_program("shaders/shader.vert", "shaders/shader.frag");
+
+    // set up the buffers
+    GLuint VAO, VBO, EBO;
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertices), rectVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectIndices), rectIndices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
 
     // MAIN LOOP //
     // glfw's main loop
@@ -191,7 +228,10 @@ int main (int argc, char **argv)
         glfwPollEvents();
 
         // figure out what to draw to the screen
-        display();
+        // for now we are just going to use this program for everything
+        // in the future, I should provide a way to change programs easily
+        glUseProgram(program);
+        display(VAO);
 
         // finally, swap the buffers
         glfwSwapBuffers(window);
