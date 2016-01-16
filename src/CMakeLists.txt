@@ -6,7 +6,7 @@ add_executable(main main.c ${SOURCES})
 
 target_link_libraries(main 
                       ${GLEW_LIBRARY} 
-                      ${GLFW3_LIBRARY} 
+                      ${GLFW_LIBRARIES}
                       ${OPENGL_gl_LIBRARY}
                       ${X11_LIBRARY}
                       m # link with math system libs
