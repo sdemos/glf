@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -140,11 +141,21 @@ GLuint create_shader_program (char *vert_file, char *frag_file)
     return program;
 }
 
-void display (GLuint VAO)
+void display (GLuint program, GLuint VAO)
 {
+    // for now we are just going to use this program for everything
+    // in the future, I should provide a way to change programs easily
+    glUseProgram(program);
+
     // set background color
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // update the uniform color
+    GLfloat timeValue = glfwGetTime();
+    GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
+    GLint ourColorLocation = glGetUniformLocation(program, "ourColor");
+    glUniform4f(ourColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
     // bind the VAO we want to use
     glBindVertexArray(VAO);
@@ -228,10 +239,7 @@ int main (int argc, char **argv)
         glfwPollEvents();
 
         // figure out what to draw to the screen
-        // for now we are just going to use this program for everything
-        // in the future, I should provide a way to change programs easily
-        glUseProgram(program);
-        display(VAO);
+        display(program, VAO);
 
         // finally, swap the buffers
         glfwSwapBuffers(window);

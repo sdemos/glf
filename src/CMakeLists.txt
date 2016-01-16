@@ -5,4 +5,5 @@ target_link_libraries(main
                       ${GLFW3_LIBRARY} 
                       ${OPENGL_gl_LIBRARY}
                       ${X11_LIBRARY}
+                      m # link with math system libs
                      )
