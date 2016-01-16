@@ -18,3 +18,11 @@ include_directories(${OPENGL_INCLUDE_DIR}
 #find_package(xi)
 
 add_subdirectory(src)
+
+# we want to copy the shaders over to the build directory
+set(SHADER_DIR shaders)
+add_custom_target(copy_shaders
+    ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/${SHADER_DIR}
+    ${CMAKE_BINARY_DIR}/${SHADER_DIR})
+add_dependencies(main copy_shaders)
