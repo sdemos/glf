@@ -7,9 +7,11 @@ layout (location = 2) in vec2 texCoord;
 out vec3 interpColor;
 out vec2 interpTexCoord;
 
+uniform mat4 mvp;
+
 void main ()
 {
     interpColor = color;
     interpTexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
-    gl_Position = vec4(position, 1.0);
+    gl_Position = mvp * vec4(position, 1.0);
 }
