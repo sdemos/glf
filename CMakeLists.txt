@@ -10,13 +10,12 @@ find_package(SOIL REQUIRED)
 # hooking up glfw
 find_package(GLFW REQUIRED)
 add_definitions(${GLFW_CFLAGS_OTHER})
+
 include_directories(${OPENGL_INCLUDE_DIR}
                     ${GLFW_INCLUDE_DIR}
+                    ${SOIL_INCLUDE_DIR}
+                    include
                    )
-
-#find_package(pthread)
-#find_package(xrandr)
-#find_package(xi)
 
 add_subdirectory(src)
 add_subdirectory(shaders)
