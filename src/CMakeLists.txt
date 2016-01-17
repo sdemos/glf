@@ -8,5 +8,6 @@ target_link_libraries(main
                       ${SOIL_LIBRARY}
                       ${OPENGL_gl_LIBRARY}
                       ${X11_LIBRARY}
+                      ${BARI_LIBRARY}
                       m # link with math system libs
                      )
