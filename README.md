@@ -18,3 +18,10 @@ someone elses overlay that I found who packaged it and I threw it into [my
 overlay](https://github.com/sdemos/sdemos-overlay), which can be added by
 running `layman -o https://github.com/sdemos/sdemos-overlay.git -f -a
 sdemos-overlay`.
+
+## bari
+
+This library uses the [bari](https://github.com/TravisWhitaker/bari) matrix
+library for all matrix math. A `FindBARI.cmake` file has been included with the
+project that simply assumes that bari is installed in the default spot. This
+should probably be made more robust.
