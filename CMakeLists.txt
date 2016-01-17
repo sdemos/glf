@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
+
+set(CMAKE_C_STANDARD 99)
 
 project(glf C) # working title...
 
@@ -26,3 +28,11 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 add_subdirectory(src)
 add_subdirectory(shaders)
+
+set(ASSETS_DIR assets)
+
+add_custom_target(copy_assets
+    ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/${ASSETS_DIR}
+    ${CMAKE_BINARY_DIR}/${ASSETS_DIR})
+add_dependencies(main copy_assets)

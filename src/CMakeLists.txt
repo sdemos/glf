@@ -1,4 +1,4 @@
-set(SOURCES file.c shader.c)
+set(SOURCES file.c shader.c texture.c)
 
 add_executable(main main.c ${SOURCES})
 

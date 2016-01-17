@@ -12,11 +12,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <SOIL.h>
-
 #include <bari.h>
 
 #include "shader.h"
+#include "texture.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -221,25 +220,8 @@ int main (int argc, char **argv)
     }
 
     // load the textures
-    int width, height;
-    GLuint container_texture, smile_texture;
-
-    glGenTextures(1, &container_texture);
-    glGenTextures(1, &smile_texture);
-
-    glBindTexture(GL_TEXTURE_2D, container_texture);
-    unsigned char *container_image = SOIL_load_image("container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, container_image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    SOIL_free_image_data(container_image);
-
-    glBindTexture(GL_TEXTURE_2D, smile_texture);
-    unsigned char *smile_image = SOIL_load_image("awesomeface.png", &width, &height, 0, SOIL_LOAD_RGB);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, smile_image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    SOIL_free_image_data(smile_image);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLuint container_texture = make_texture("assets/container.jpg");
+    GLuint smile_texture = make_texture("assets/awesomeface.png");
 
     // set up the buffers
     GLuint VAO, VBO, EBO;
