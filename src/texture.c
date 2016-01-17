@@ -43,7 +43,7 @@ GLuint make_texture (const char *image_filepath)
                     SOIL_LOAD_RGB))) {
         fprintf(stderr, "error: make_texture: image SOIL_load_iamge");
         fprintf(stderr, "error: make_texture: SOIL error string: %s\n",
-                result_string_pointer);
+                SOIL_last_result());
         return 0;
     }
 
