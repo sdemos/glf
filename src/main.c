@@ -16,6 +16,7 @@
 
 #include "shader.h"
 #include "texture.h"
+#include "keyboard.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -70,9 +71,6 @@ GLfloat cubeVerts[] = {
 };
 
 bari_vec3 cubePositions[10];
-
-// keep track of key presses
-char keys[1024];
 
 // camera postitions
 bari_vec3 camera_pos, camera_front, camera_up;
@@ -156,20 +154,6 @@ void display (GLuint program, GLuint VAO, GLuint container_texture, GLuint smile
     glBindVertexArray(0);
 }
 
-void keyboard (GLFWwindow *window, int key, int scancode, int action, int mode)
-{
-    // close the window
-    if (keys[GLFW_KEY_ESCAPE]) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-
-    if (action == GLFW_PRESS) {
-        keys[key] = 1;
-    } else if (action == GLFW_RELEASE) {
-        keys[key] = 0;
-    }
-}
-
 void mouse (GLFWwindow *window, double xpos, double ypos)
 {
     if (first_mouse) {
@@ -232,9 +216,48 @@ void movement ()
     }
 }
 
+GLFWwindow *glf_init ()
+{
+    GLFWwindow *window;
+
+    // initialize glfw
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+    // get a glfw window
+    if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL", NULL, NULL))) {
+        fprintf(stderr, "Failed to initialize GLFW window\n");
+        glfwTerminate();
+        return 0;
+    }
+    glfwMakeContextCurrent(window);
+
+    // initialize glew
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW\n");
+        return 0;
+    }
+
+    // initialize the keyboard
+    keyboard_init(window);
+
+    // let opengl know the size of the window it's working with
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // enable various options
+    glEnable(GL_DEPTH_TEST);
+
+    return window;
+}
+
 int main (int argc, char **argv)
 {
     GLuint program;
+    GLFWwindow *window;
 
     cubePositions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
     cubePositions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
@@ -248,46 +271,23 @@ int main (int argc, char **argv)
     cubePositions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
 
     // INITIALIZATION //
-    // initialize glfw
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    // get a glfw window
-    GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL", NULL, NULL);
-    if (!window) {
-        fprintf(stderr, "Failed to initialize GLFW window\n");
-        glfwTerminate();
+    if (!(window = glf_init())) {
         return 1;
     }
-    glfwMakeContextCurrent(window);
-
-    // initialize glew
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return 0;
-    }
-
-    // let opengl know the size of the window it's working with
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    // enable various options
-    glEnable(GL_DEPTH_TEST);
 
     // set a variety of glfw callback functions here
-    glfwSetKeyCallback(window, keyboard);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse);
     glfwSetScrollCallback(window, scroll);
+
+    // add some keybindings
+    keyboard_add_keybinding(GLFW_KEY_ESCAPE, keyboard_close_window_callback);
 
     // compile (and link) shaders!
     if (!(program = create_shader_program("shaders/shader.vert", "shaders/shader.frag"))) {
         // any errors in create_shader_program print out detailed error messages
         // so just throw up instead.
-        return 0;
+        return 1;
     }
 
     // load the textures
@@ -338,6 +338,7 @@ int main (int argc, char **argv)
     while (!glfwWindowShouldClose(window)) {
         // check events and call appropriate callback functions
         glfwPollEvents();
+        keyboard(window);
         movement();
 
         GLfloat current_frame = glfwGetTime();
