@@ -27,6 +27,27 @@
 
 bari_vec3 cubePositions[10];
 
+// keep track of key presses
+char keys[1024];
+
+// camera postitions
+bari_vec3 camera_pos, camera_front, camera_up;
+
+// smooth out movement
+GLfloat delta_time = 0.0f;
+GLfloat last_frame = 0.0f;
+
+// mouse location
+GLfloat lastx = 400, lasty = 300;
+
+char first_mouse = 1;
+
+// our current pitch and yaw
+GLfloat pitch = 0.0f, yaw = 0.0f;
+
+// the field of view for the perspective transformation
+GLfloat fov = 45.0f;
+
 GLfloat triangleVertices[] = {
     // Positions         // Colors
      0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // Bottom Right
@@ -126,15 +147,23 @@ void display (GLuint program, GLuint VAO, GLuint container_texture, GLuint smile
 
     // set up model view projection matrix
     //bari_mat4 model = bari_rotate_x(DEG_TO_RAD(-55.0f));
-    bari_mat4 view  = bari_translate(0.0f, 0.0f, -3.0f);
-    bari_mat4 proj  = bari_perspective(DEG_TO_RAD(45.0f), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-    bari_mat4 vp    = bari_mprod4(proj, view);
-    GLuint mvpLoc = glGetUniformLocation(program, "mvp");
+    //bari_mat4 view = bari_translate(0.0f, 0.0f, -3.0f);
+    //float radius   = 10.0f;
+    //float camX     = sin(glfwGetTime()) * radius;
+    //float camZ     = cos(glfwGetTime()) * radius;
+    //bari_mat4 view = bari_lookat(bari_vec3_create(camX, 0.0f, camZ),
+    //                             bari_vec3_create(0.0f, 0.0f, 0.0f),
+    //                             bari_vec3_create(0.0f, 1.0f, 0.0f));
+    bari_mat4 view = bari_lookat(camera_pos, bari_vsum3(camera_pos, camera_front), camera_up);
+    bari_mat4 proj = bari_perspective(fov, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+    bari_mat4 vp   = bari_mprod4(proj, view);
+    GLuint mvpLoc  = glGetUniformLocation(program, "mvp");
 
     // activate the textures
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, container_texture);
     glUniform1i(glGetUniformLocation(program, "ourTexture1"), 0);
+
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, smile_texture);
     glUniform1i(glGetUniformLocation(program, "ourTexture2"), 1);
@@ -158,9 +187,77 @@ void display (GLuint program, GLuint VAO, GLuint container_texture, GLuint smile
 
 void keyboard (GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-    // close the application!
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    // close the window
+    if (keys[GLFW_KEY_ESCAPE]) {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
+    if (action == GLFW_PRESS) {
+        keys[key] = 1;
+    } else if (action == GLFW_RELEASE) {
+        keys[key] = 0;
+    }
+}
+
+void mouse (GLFWwindow *window, double xpos, double ypos)
+{
+    if (first_mouse) {
+        lastx = xpos;
+        lasty = ypos;
+        first_mouse = !first_mouse;
+    }
+
+    GLfloat xoffset = xpos - lastx;
+    GLfloat yoffset = lasty - ypos;
+    lastx = xpos;
+    lasty = ypos;
+
+    GLfloat sensitivity = 0.05f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    } else if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    bari_vec3 front;
+    front.x = cos(DEG_TO_RAD(yaw)) * cos(DEG_TO_RAD(pitch));
+    front.y = sin(DEG_TO_RAD(pitch));
+    front.z = sin(DEG_TO_RAD(yaw)) * cos(DEG_TO_RAD(pitch));
+    camera_front = bari_norm3(front);
+}
+
+void scroll (GLFWwindow *window, double xoffset, double yoffset)
+{
+    if (fov >= 1.0f && fov <= 45.0f) {
+        fov -= yoffset;
+    } else if (fov < 1.0f) {
+        fov = 1.0f;
+    } else if (fov > 45.0f) {
+        fov = 45.0f;
+    }
+}
+
+void movement ()
+{
+    GLfloat camera_speed = 5.0f * delta_time;
+
+    if (keys[GLFW_KEY_W]) {
+        camera_pos = bari_vsum3(camera_pos, bari_vscale3(camera_front, camera_speed));
+    }
+    if (keys[GLFW_KEY_S]) {
+        camera_pos = bari_vsub3(camera_pos, bari_vscale3(camera_front, camera_speed));
+    }
+    if (keys[GLFW_KEY_A]) {
+        camera_pos = bari_vsub3(camera_pos, bari_vscale3(bari_norm3(bari_cross(camera_front, camera_up)), camera_speed));
+    }
+    if (keys[GLFW_KEY_D]) {
+        camera_pos = bari_vsum3(camera_pos, bari_vscale3(bari_norm3(bari_cross(camera_front, camera_up)), camera_speed));
     }
 }
 
@@ -211,6 +308,9 @@ int main (int argc, char **argv)
 
     // set a variety of glfw callback functions here
     glfwSetKeyCallback(window, keyboard);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse);
+    glfwSetScrollCallback(window, scroll);
 
     // compile (and link) shaders!
     if (!(program = create_shader_program("shaders/shader.vert", "shaders/shader.frag"))) {
@@ -257,11 +357,21 @@ int main (int argc, char **argv)
 
     glBindVertexArray(0);
 
+    // set initial camera location
+    camera_pos   = bari_vec3_create(0.0f, 0.0f, 3.0f);
+    camera_front = bari_vec3_create(0.0f, 0.0f,-1.0f);
+    camera_up    = bari_vec3_create(0.0f, 1.0f, 0.0f);
+
     // MAIN LOOP //
     // glfw's main loop
     while (!glfwWindowShouldClose(window)) {
         // check events and call appropriate callback functions
         glfwPollEvents();
+        movement();
+
+        GLfloat current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
 
         // figure out what to draw to the screen
         display(program, VAO, container_texture, smile_texture);
