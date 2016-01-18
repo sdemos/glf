@@ -25,49 +25,6 @@
 
 #define BARI_VALUE_PTR(m) ((float *)&m)
 
-bari_vec3 cubePositions[10];
-
-// keep track of key presses
-char keys[1024];
-
-// camera postitions
-bari_vec3 camera_pos, camera_front, camera_up;
-
-// smooth out movement
-GLfloat delta_time = 0.0f;
-GLfloat last_frame = 0.0f;
-
-// mouse location
-GLfloat lastx = 400, lasty = 300;
-
-char first_mouse = 1;
-
-// our current pitch and yaw
-GLfloat pitch = 0.0f, yaw = 0.0f;
-
-// the field of view for the perspective transformation
-GLfloat fov = 45.0f;
-
-GLfloat triangleVertices[] = {
-    // Positions         // Colors
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // Bottom Right
-    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // Bottom Left
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // Top
-};
-
-GLfloat rectVertices[] = {
-    // Positions         // Colors          // Texture Coords
-     0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,   // Top Right
-     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,   // Bottom Right
-    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,   // Bottom Left
-    -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,   // Top Left
-};
-
-GLuint rectIndices[] = {
-    0, 1, 3
-  , 1, 2, 3
-};
-
 GLfloat cubeVerts[] = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -112,14 +69,28 @@ GLfloat cubeVerts[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-bari_vec3 bari_vec3_create(float x, float y, float z)
-{
-    bari_vec3 v;
-    v.x = x;
-    v.y = y;
-    v.z = z;
-    return v;
-}
+bari_vec3 cubePositions[10];
+
+// keep track of key presses
+char keys[1024];
+
+// camera postitions
+bari_vec3 camera_pos, camera_front, camera_up;
+
+// smooth out movement
+GLfloat delta_time = 0.0f;
+GLfloat last_frame = 0.0f;
+
+// mouse location
+GLfloat lastx = 400, lasty = 300;
+
+char first_mouse = 1;
+
+// our current pitch and yaw
+GLfloat pitch = 0.0f, yaw = 0.0f;
+
+// the field of view for the perspective transformation
+GLfloat fov = 45.0f;
 
 void display (GLuint program, GLuint VAO, GLuint container_texture, GLuint smile_texture)
 {
@@ -265,16 +236,16 @@ int main (int argc, char **argv)
 {
     GLuint program;
 
-    cubePositions[0] = bari_vec3_create( 0.0f,  0.0f,  0.0f);
-    cubePositions[1] = bari_vec3_create( 2.0f,  5.0f, -15.0f);
-    cubePositions[2] = bari_vec3_create(-1.5f, -2.2f, -2.5f);
-    cubePositions[3] = bari_vec3_create(-3.8f, -2.0f, -12.3f);
-    cubePositions[4] = bari_vec3_create( 2.4f, -0.4f, -3.5f);
-    cubePositions[5] = bari_vec3_create(-1.7f,  3.0f, -7.5f);
-    cubePositions[6] = bari_vec3_create( 1.3f, -2.0f, -2.5f);
-    cubePositions[7] = bari_vec3_create( 1.5f,  2.0f, -2.5f);
-    cubePositions[8] = bari_vec3_create( 1.5f,  0.2f, -1.5f);
-    cubePositions[9] = bari_vec3_create(-1.3f,  1.0f, -1.5f);
+    cubePositions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
+    cubePositions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
+    cubePositions[2] = bari_mkvec3(-1.5f, -2.2f, -2.5f);
+    cubePositions[3] = bari_mkvec3(-3.8f, -2.0f, -12.3f);
+    cubePositions[4] = bari_mkvec3( 2.4f, -0.4f, -3.5f);
+    cubePositions[5] = bari_mkvec3(-1.7f,  3.0f, -7.5f);
+    cubePositions[6] = bari_mkvec3( 1.3f, -2.0f, -2.5f);
+    cubePositions[7] = bari_mkvec3( 1.5f,  2.0f, -2.5f);
+    cubePositions[8] = bari_mkvec3( 1.5f,  0.2f, -1.5f);
+    cubePositions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
 
     // INITIALIZATION //
     // initialize glfw
@@ -358,9 +329,9 @@ int main (int argc, char **argv)
     glBindVertexArray(0);
 
     // set initial camera location
-    camera_pos   = bari_vec3_create(0.0f, 0.0f, 3.0f);
-    camera_front = bari_vec3_create(0.0f, 0.0f,-1.0f);
-    camera_up    = bari_vec3_create(0.0f, 1.0f, 0.0f);
+    camera_pos   = bari_mkvec3(0.0f, 0.0f, 3.0f);
+    camera_front = bari_mkvec3(0.0f, 0.0f,-1.0f);
+    camera_up    = bari_mkvec3(0.0f, 1.0f, 0.0f);
 
     // MAIN LOOP //
     // glfw's main loop
