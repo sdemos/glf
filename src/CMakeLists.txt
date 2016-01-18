@@ -1,4 +1,4 @@
-set(SOURCES file.c shader.c texture.c keyboard.c)
+set(SOURCES file.c shader.c texture.c keyboard.c camera.c)
 
 add_executable(main main.c ${SOURCES})
 
