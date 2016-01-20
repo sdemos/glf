@@ -2,7 +2,7 @@
 # this method prevents unecessary copying of files
 
 set(SHADER_DIR shaders)
-set(SHADERS shader.vert shader.frag)
+set(SHADERS shader.vert shader.frag light.vert light.frag)
 
 foreach(SHADER ${SHADERS})
     add_custom_target(copy_shader_${SHADER}

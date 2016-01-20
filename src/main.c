@@ -21,104 +21,92 @@
 #include "camera.h"
 
 GLfloat cubeVerts[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
-bari_vec3 cubePositions[10];
+bari_vec3 light_pos;
 
-void display (GLuint program, GLuint VAO, GLuint container_texture, GLuint smile_texture)
+void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLuint lightVAO)
 {
-    // for now we are just going to use this program for everything
-    // in the future, I should provide a way to change programs easily
-    glUseProgram(program);
-
     // set background color
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // update the uniform color
-    //GLfloat timeValue = glfwGetTime();
-    //GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
-    //GLint ourColorLocation = glGetUniformLocation(program, "ourColor");
-    //glUniform4f(ourColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-    // set up transformation matrix
-    //bari_mat4 transform = bari_mprod4(bari_scale(0.5, 0.5, 0.5), bari_rotate_z(M_PI / 2));
-    //bari_mat4 rotate = bari_rotate_z(DEG_TO_RAD((GLfloat)glfwGetTime() * 50.0f));
-    //bari_mat4 translate = bari_translate(0.5f, -0.5f, 0.0f);
-    //bari_mat4 transform = bari_mprod4(translate, rotate);
-    //GLuint transformLoc = glGetUniformLocation(program, "transform");
-    //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &transform);
-
     // set up model view projection matrix
-    bari_mat4 view = camera_view();
-    bari_mat4 proj = bari_perspective(45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-    bari_mat4 vp   = bari_mprod4(proj, view);
-    GLuint mvpLoc  = glGetUniformLocation(program, "mvp");
+    bari_mat4 view  = camera_view();
+    bari_mat4 proj  = bari_perspective(45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+    bari_mat4 vp    = bari_mprod4(proj, view);
 
-    // activate the textures
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, container_texture);
-    glUniform1i(glGetUniformLocation(program, "ourTexture1"), 0);
+    glUseProgram(shader_program);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, smile_texture);
-    glUniform1i(glGetUniformLocation(program, "ourTexture2"), 1);
+    // pass current camera position
+    bari_vec3 camera_pos = current_camera_pos();
+    GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
+    glUniform3f(camera_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z);
 
-    // bind the VAO we want to use
-    glBindVertexArray(VAO);
-    // draw the object
-    for (GLuint i = 0; i < 10; i++) {
-        float angle = DEG_TO_RAD(20.0f * i);
-        bari_mat4 translate = bari_translate(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z);
-        bari_mat4 rotate = bari_rotate(1.0f * angle, 0.3f * angle, 0.5f * angle);
-        bari_mat4 model = bari_mprod4(translate, rotate);
-        bari_mat4 mvp = bari_mprod4(vp, model);
-        glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, BARI_VALUE_PTR(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    // unbind the VAO
+    bari_mat4 shader_model  = bari_mat4_id;
+    bari_mat4 shader_mvp    = bari_mprod4(vp, shader_model);
+    GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
+    GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
+    glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_model));
+    glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mvp));
+
+    glBindVertexArray(shaderVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glUseProgram(light_program);
+
+    bari_mat4 light_translate = bari_translate(light_pos.x, light_pos.y, light_pos.z);
+    bari_mat4 light_scale     = bari_scale(0.2f, 0.2f, 0.2f);
+    bari_mat4 light_model = bari_mprod4(light_translate, light_scale);
+    bari_mat4 light_mvp   = bari_mprod4(vp, light_model);
+    GLuint light_model_loc = glGetUniformLocation(shader_program, "model");
+    GLuint light_mvp_loc  = glGetUniformLocation(light_program, "mvp");
+    glUniformMatrix4fv(light_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_model));
+    glUniformMatrix4fv(light_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_mvp));
+
+    glBindVertexArray(lightVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     glBindVertexArray(0);
 }
 
@@ -135,17 +123,17 @@ GLFWwindow *glf_init ()
 
     // get a glfw window
     if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL", NULL, NULL))) {
-        fprintf(stderr, "Failed to initialize GLFW window\n");
+        fprintf(stderr, "glf_init: Failed to initialize GLFW window\n");
         glfwTerminate();
-        return 0;
+        exit(1);
     }
     glfwMakeContextCurrent(window);
 
     // initialize glew
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return 0;
+        fprintf(stderr, "glf_init: Failed to initialize GLEW\n");
+        exit(1);
     }
 
     // initialize the keyboard
@@ -160,52 +148,58 @@ GLFWwindow *glf_init ()
     // enable various options
     glEnable(GL_DEPTH_TEST);
 
+    // initialize lighting
+    light_pos = bari_mkvec3(1.2f, 1.0f, 2.0f);
+
     return window;
 }
 
 int main (int argc, char **argv)
 {
-    GLuint program;
+    GLuint shader_program, light_program;
     GLFWwindow *window;
 
-    cubePositions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
-    cubePositions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
-    cubePositions[2] = bari_mkvec3(-1.5f, -2.2f, -2.5f);
-    cubePositions[3] = bari_mkvec3(-3.8f, -2.0f, -12.3f);
-    cubePositions[4] = bari_mkvec3( 2.4f, -0.4f, -3.5f);
-    cubePositions[5] = bari_mkvec3(-1.7f,  3.0f, -7.5f);
-    cubePositions[6] = bari_mkvec3( 1.3f, -2.0f, -2.5f);
-    cubePositions[7] = bari_mkvec3( 1.5f,  2.0f, -2.5f);
-    cubePositions[8] = bari_mkvec3( 1.5f,  0.2f, -1.5f);
-    cubePositions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
-
     // INITIALIZATION //
-    if (!(window = glf_init())) {
-        return 1;
-    }
+    window = glf_init();
 
     // add some keybindings
     keyboard_add_keybinding(GLFW_KEY_ESCAPE, keyboard_close_window_callback);
 
     // compile (and link) shaders!
-    if (!(program = create_shader_program("shaders/shader.vert", "shaders/shader.frag"))) {
-        // any errors in create_shader_program print out detailed error messages
-        // so just throw up instead.
-        return 1;
-    }
+    shader_program = create_shader_program("shaders/shader.vert", "shaders/shader.frag");
+    light_program = create_shader_program("shaders/light.vert", "shaders/light.frag");
 
+    // for now we are just going to use this program for everything
+    // in the future, I should provide a way to change programs easily
+    // that is, if I ever end up needing more than one program
+    glUseProgram(shader_program);
+
+    // I need to design a better abstraction for the textures
+    // although it seems I need to make all of the textures befor I bind them
+    // to their texture unit, or else the old ones get blown away during the
+    // texture creation
     // load the textures
-    GLuint container_texture = make_texture("assets/container.jpg");
-    GLuint smile_texture = make_texture("assets/awesomeface.png");
+    //GLuint container_texture = make_texture("assets/container.jpg");
+    //GLuint smile_texture = make_texture("assets/awesomeface.png");
+
+    //// activate the textures
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, container_texture);
+    //glUniform1i(glGetUniformLocation(program, "ourTexture1"), 0);
+
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, smile_texture);
+    //glUniform1i(glGetUniformLocation(program, "ourTexture2"), 1);
 
     // set up the buffers
-    GLuint VAO, VBO, EBO;
+    GLuint shaderVAO, VBO, EBO, lightVAO;
 
-    glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &lightVAO);
+    glGenVertexArrays(1, &shaderVAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    //glGenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(shaderVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
@@ -214,23 +208,43 @@ int main (int argc, char **argv)
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectIndices), rectIndices, GL_STATIC_DRAW);
 
 #define POSITION_LOC 0
-#define COLOR_LOC 1
-#define TEX_LOC 2
+#define NORMAL_LOC 1
     // Position attribute information
-    glVertexAttribPointer(POSITION_LOC, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) 0);
+    glVertexAttribPointer(POSITION_LOC, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) 0);
     glEnableVertexAttribArray(POSITION_LOC);
+
+    // normal vector attribute information
+    glVertexAttribPointer(NORMAL_LOC, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(NORMAL_LOC);
 
     // Color attribute information
     //glVertexAttribPointer(COLOR_LOC, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
     //glEnableVertexAttribArray(COLOR_LOC);
 
     // Texture Coordinate attribute information
-    glVertexAttribPointer(TEX_LOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(TEX_LOC);
+    //glVertexAttribPointer(TEX_LOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
+    //glEnableVertexAttribArray(TEX_LOC);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(lightVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(POSITION_LOC, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) 0);
+    glEnableVertexAttribArray(POSITION_LOC);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
+
+    GLuint object_color_loc = glGetUniformLocation(shader_program, "object_color");
+    GLuint light_color_loc = glGetUniformLocation(shader_program, "light_color");
+    GLuint light_pos_loc = glGetUniformLocation(shader_program, "light_pos");
+    glUniform3f(object_color_loc, 1.0f, 0.5f, 0.31f);
+    glUniform3f(light_color_loc,  1.0f, 1.0f, 1.0f);
+    glUniform3f(light_pos_loc, light_pos.x, light_pos.y, light_pos.z);
 
     // MAIN LOOP //
     // glfw's main loop
@@ -240,7 +254,7 @@ int main (int argc, char **argv)
 
         keyboard(window);
         camera();
-        display(program, VAO, container_texture, smile_texture);
+        display(shader_program, shaderVAO, light_program, lightVAO);
 
         // finally, swap the buffers
         glfwSwapBuffers(window);
