@@ -21,7 +21,7 @@
  *
  * if any errors occur during the shader compilation, including reading the
  * given shader file or compiling the shader, a detailed error message is
- * printed to stderr and 0 is returned
+ * printed to stderr and exit(1) is called
  *
  * arguments:
  *  const char *shader_filepath - the relative filepath of the shader to
@@ -29,7 +29,7 @@
  *  GLenum shader_type - the type of shader to compile the given file as
  *
  * returns:
- *  a GLuint that identifies the shader to OpenGL, or 0 on error (see above)
+ *  a GLuint that identifies the shader to OpenGL
  */
 GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
 {
@@ -39,12 +39,7 @@ GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
     GLchar infoLog[512];
 
     // get the contents of the file
-    if (!(shader_source = get_file_contents(shader_filepath))) {
-        // failed to get shader file!
-        // get_file_contents should've already errored
-        // so just pass the error up the chain
-        return 0;
-    }
+    shader_source = get_file_contents(shader_filepath);
 
     // create our brand new shader
     shader = glCreateShader(shader_type);
@@ -57,7 +52,7 @@ GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
         glGetShaderInfoLog(shader, 512, NULL, infoLog);
         fprintf(stderr, "error: compile_shader: shader failed to compile - %s\n", shader_filepath);
         fprintf(stderr, "error: compile_shader: shader compile error - \n%s\n", infoLog);
-        return 0;
+        exit(1);
     }
 
     // clean up the shader_source string
@@ -75,7 +70,7 @@ GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
  *
  * if any errors occur during this function, including reading the files,
  * compilation, and linking errors, a detailed error message is printed to
- * stderr and 0 is returned
+ * stderr and exit(1) is called
  *
  * arguments:
  *  const char *vert_file - the relative filepath of the vertex shader to
@@ -84,8 +79,7 @@ GLuint compile_shader (const char *shader_filepath, GLenum shader_type)
  *      compile and link
  *
  * returns:
- *  the GLuint identifier of the program that is registered with OpenGL,
- *  or 0 on error (see above)
+ *  the GLuint identifier of the program that is registered with OpenGL
  */
 GLuint create_shader_program (const char *vert_file, const char *frag_file)
 {
@@ -94,12 +88,8 @@ GLuint create_shader_program (const char *vert_file, const char *frag_file)
     GLchar infoLog[512];
 
     // compile the vertex and fragment shaders
-    if (!(vert = compile_shader(vert_file, GL_VERTEX_SHADER))
-     || !(frag = compile_shader(frag_file, GL_FRAGMENT_SHADER))) {
-        // compile shader should've printed out a more detailed error
-        // so just throw this back up to the caller
-        return 0;
-    }
+    vert = compile_shader(vert_file, GL_VERTEX_SHADER);
+    frag = compile_shader(frag_file, GL_FRAGMENT_SHADER);
 
     // create a new program to link the shaders to
     program = glCreateProgram();
@@ -115,7 +105,7 @@ GLuint create_shader_program (const char *vert_file, const char *frag_file)
         glGetProgramInfoLog(program, 512, NULL, infoLog);
         fprintf(stderr, "error: create_shader_program: shader failed to link");
         fprintf(stderr, "error: create_shader_program: shader link error - \n%s\n", infoLog);
-        return 0;
+        exit(1);
     }
 
     return program;

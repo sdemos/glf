@@ -8,7 +8,7 @@
  *
  * if any errors occur during the reading of the file on disk, including
  * opening the file, allocating memory, and actually reading the file, a
- * detailed error message is printed to stderr and NULL is returned
+ * detailed error message is printed to stderr and exit(1) is called
  *
  * arguments:
  *  const char *filepath - the relative filepath of the file to return the
@@ -16,7 +16,7 @@
  *
  * returns:
  *  a char * allocated with calloc to exactly the size of the file passed,
- *  containing the contents of the file, or NULL on error (see above)
+ *  containing the contents of the file
  */
 char *get_file_contents (const char *filepath);
 

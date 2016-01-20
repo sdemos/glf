@@ -16,8 +16,8 @@
  * provided at the filepath using SOIL (www.lonesock.net/soil.html)
  *
  * on error, this function will print out a detailed error message, including
- * SOIL's error string if the error was with image loading, and then will
- * return 0
+ * SOIL's error string if the error was with image loading, and the will call
+ * exit(1)
  *
  * arguments
  *  const char *image_filepath - the relative filepath of the iamge to load

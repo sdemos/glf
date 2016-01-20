@@ -15,7 +15,7 @@
  *
  * if any errors occur during the reading of the file on disk, including
  * opening the file, allocating memory, and actually reading the file, a
- * detailed error message is printed to stderr and NULL is returned
+ * detailed error message is printed to stderr and exit(1) is called
  *
  * arguments:
  *  const char *filepath - the relative filepath of the file to return the
@@ -23,7 +23,7 @@
  *
  * returns:
  *  a char * allocated with calloc to exactly the size of the file passed,
- *  containing the contents of the file, or NULL on error (see above)
+ *  containing the contents of the file
  */
 char *get_file_contents (const char *filepath)
 {
@@ -36,7 +36,7 @@ char *get_file_contents (const char *filepath)
     if (!fp) {
         perror("error: get_file_contents: fp fopen");
         fprintf(stderr, "error: get_file_contents: fp fopen problem child: %s\n", filepath);
-        return NULL;
+        exit(1);
     }
 
     // find the end of the file, and make a buffer based on the length
@@ -50,7 +50,7 @@ char *get_file_contents (const char *filepath)
         perror("error: get_file_contents: buffer malloc");
         fprintf(stderr, "error: get_file_contents: buffer malloc problem child: %s\n", filepath);
         fclose(fp);
-        return NULL;
+        exit(1);
     }
 
     // read file_size bytes from fp into the buffer
@@ -59,7 +59,7 @@ char *get_file_contents (const char *filepath)
         fprintf(stderr, "error: get_file_contents: fp fread problem child: %s\n", filepath);
         fclose(fp);
         free(buffer);
-        return NULL;
+        exit(1);
     }
 
     // close up the file now that we are done

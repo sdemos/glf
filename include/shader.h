@@ -11,7 +11,7 @@
  *
  * if any errors occur during this function, including reading the files,
  * compilation, and linking errors, a detailed error message is printed to
- * stderr and 0 is returned
+ * stderr and exit(1) is called
  *
  * arguments:
  *  const char *vert_file - the relative filepath of the vertex shader to
@@ -20,8 +20,7 @@
  *      compile and link
  *
  * returns:
- *  the GLuint identifier of the program that is registered with OpenGL,
- *  or 0 on error (see above)
+ *  the GLuint identifier of the program that is registered with OpenGL
  */
 GLuint create_shader_program (const char *vert_file, const char *frag_file);
 
