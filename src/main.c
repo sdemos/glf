@@ -78,6 +78,28 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
 
     glUseProgram(shader_program);
 
+    // set material properties
+    GLuint maloc  = glGetUniformLocation(shader_program, "m.a");
+    GLuint mdloc  = glGetUniformLocation(shader_program, "m.d");
+    GLuint msloc  = glGetUniformLocation(shader_program, "m.s");
+    GLuint mseloc = glGetUniformLocation(shader_program, "m.se");
+    glUniform3f(maloc,  1.0f, 0.5f, 0.31f);
+    glUniform3f(mdloc,  1.0f, 0.5f, 0.31f);
+    glUniform3f(msloc,  0.5f, 0.5f, 0.5f);
+    glUniform1f(mseloc, 32.0f);
+
+    // set light properties
+    GLuint la = glGetUniformLocation(shader_program, "l.a");
+    GLuint ld = glGetUniformLocation(shader_program, "l.d");
+    GLuint ls = glGetUniformLocation(shader_program, "l.s");
+    GLuint lp = glGetUniformLocation(shader_program, "l.p");
+    glUniform3f(la, 0.2f, 0.2f, 0.2f);
+    glUniform3f(ld, 0.5f, 0.5f, 0.5f);
+    glUniform3f(ls, 1.0f, 1.0f, 1.0f);
+    glUniform3f(lp, light_pos.x, light_pos.y, light_pos.z);
+
+    // pass in the light position
+
     // pass current camera position
     bari_vec3 camera_pos = current_camera_pos();
     GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
@@ -238,13 +260,6 @@ int main (int argc, char **argv)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
-
-    GLuint object_color_loc = glGetUniformLocation(shader_program, "object_color");
-    GLuint light_color_loc = glGetUniformLocation(shader_program, "light_color");
-    GLuint light_pos_loc = glGetUniformLocation(shader_program, "light_pos");
-    glUniform3f(object_color_loc, 1.0f, 0.5f, 0.31f);
-    glUniform3f(light_color_loc,  1.0f, 1.0f, 1.0f);
-    glUniform3f(light_pos_loc, light_pos.x, light_pos.y, light_pos.z);
 
     // MAIN LOOP //
     // glfw's main loop

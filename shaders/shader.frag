@@ -1,30 +1,42 @@
 #version 330 core
 
+struct Material {
+    vec3 a;   // ambient material color
+    vec3 d;   // diffuse material color
+    vec3 s;   // specular highlight properties
+    float se; // specular exponent
+};
+
+struct Light {
+    vec3 p; // light position
+    vec3 a; // light ambient component
+    vec3 d; // light diffuse component
+    vec3 s; // light specular component
+};
+
 in vec3 interp_normal;
 in vec3 interp_pos;
 
 out vec4 color;
 
-uniform vec3 object_color;
-uniform vec3 light_color;
-
 uniform vec3 camera_pos;
-uniform vec3 light_pos;
+
+uniform Light l; // light properties
+uniform Material m; // material properties
 
 void main ()
 {
-    float ambi_strength = 0.1;
-    float spec_strength = 0.5;
-
     vec3 normal = normalize(interp_normal);
-    vec3 light_dir = normalize(light_pos - interp_pos);
+    vec3 light_dir = normalize(l.p - interp_pos);
     vec3 view_dir = normalize(camera_pos - interp_pos);
     vec3 reflect_dir = reflect(-light_dir, normal);
 
-    vec3 ambient = ambi_strength * light_color;
-    vec3 diffuse = max(dot(normal, light_dir), 0.0) * light_color;
-    vec3 specular = pow(max(dot(view_dir, reflect_dir), 0.0), 32) * spec_strength * light_color;
+    float diff = max(dot(normal, light_dir), 0.0);
+    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), m.se);
 
-    vec3 light = ambient + diffuse + specular;
-    color = vec4(light * object_color, 1.0);
+    vec3 ambient  = l.a * m.a;
+    vec3 diffuse  = l.d * (diff * m.d);
+    vec3 specular = l.s * (spec * m.s);
+
+    color = vec4(ambient + diffuse + specular, 1.0);
 }
