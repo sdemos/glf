@@ -72,9 +72,8 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set up model view projection matrix
-    bari_mat4 view  = camera_view();
-    bari_mat4 proj  = bari_perspective(45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-    bari_mat4 vp    = bari_mprod4(proj, view);
+    bari_mat4 view = camera_view();
+    bari_mat4 proj = bari_perspective(45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
     glUseProgram(shader_program);
 
@@ -92,43 +91,43 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
     GLuint la = glGetUniformLocation(shader_program, "l.a");
     GLuint ld = glGetUniformLocation(shader_program, "l.d");
     GLuint ls = glGetUniformLocation(shader_program, "l.s");
-    GLuint lp = glGetUniformLocation(shader_program, "l.p");
     glUniform3f(la, 0.2f, 0.2f, 0.2f);
     glUniform3f(ld, 0.5f, 0.5f, 0.5f);
     glUniform3f(ls, 1.0f, 1.0f, 1.0f);
-    glUniform3f(lp, light_pos.x, light_pos.y, light_pos.z);
 
-    // pass in the light position
+    // set light position
+    GLuint lp = glGetUniformLocation(shader_program, "l.p");
+    bari_vec4 vlp = bari_vprod4(view, bari_promote34(light_pos, 1.0f));
+    glUniform3f(lp, vlp.x / vlp.w, vlp.y / vlp.w, vlp.z / vlp.w);
 
     // pass current camera position
-    bari_vec3 camera_pos = current_camera_pos();
-    GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
-    glUniform3f(camera_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z);
+    //bari_vec3 camera_pos = current_camera_pos();
+    //GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
+    //glUniform3f(camera_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z);
 
-    bari_mat4 shader_model  = bari_mat4_id;
-    bari_mat4 shader_mvp    = bari_mprod4(vp, shader_model);
-    GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
-    GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
-    glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_model));
+    bari_mat4 shader_model = bari_mat4_id;
+    bari_mat4 shader_mv    = bari_mprod4(view, shader_model);
+    bari_mat4 shader_mvp   = bari_mprod4(proj, shader_mv);
+    GLuint shader_mv_loc   = glGetUniformLocation(shader_program, "mv");
+    GLuint shader_mvp_loc  = glGetUniformLocation(shader_program, "mvp");
+    glUniformMatrix4fv(shader_mv_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mv));
     glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mvp));
 
     glBindVertexArray(shaderVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
 
     glUseProgram(light_program);
 
     bari_mat4 light_translate = bari_translate(light_pos.x, light_pos.y, light_pos.z);
     bari_mat4 light_scale     = bari_scale(0.2f, 0.2f, 0.2f);
     bari_mat4 light_model = bari_mprod4(light_translate, light_scale);
-    bari_mat4 light_mvp   = bari_mprod4(vp, light_model);
-    GLuint light_model_loc = glGetUniformLocation(shader_program, "model");
+    bari_mat4 light_mvp   = bari_mprod4(bari_mprod4(proj, view), light_model);
     GLuint light_mvp_loc  = glGetUniformLocation(light_program, "mvp");
-    glUniformMatrix4fv(light_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_model));
     glUniformMatrix4fv(light_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_mvp));
 
     glBindVertexArray(lightVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
     glBindVertexArray(0);
 }
 
