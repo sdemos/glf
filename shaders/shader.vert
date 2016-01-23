@@ -1,17 +1,23 @@
 #version 330 core
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
+layout (location = 0) in vec3 vposition;
+layout (location = 1) in vec3 vnormal;
+layout (location = 2) in vec2 vtex;
 
-out vec3 interp_normal;
-out vec3 interp_pos;
+out vec3 pos;
+out vec3 normal;
+out vec2 tex;
 
 uniform mat4 model;
 uniform mat4 mvp;
 
 void main ()
 {
-    interp_normal = mat3(transpose(inverse(model))) * normal;
-    interp_pos = vec3(model * vec4(position, 1.0));
-    gl_Position = mvp * vec4(position, 1.0);
+    normal = mat3(transpose(inverse(model))) * vnormal;
+
+    pos = vec3(model * vec4(vposition, 1.0));
+
+    tex = vtex;
+
+    gl_Position = mvp * vec4(vposition, 1.0);
 }
