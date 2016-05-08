@@ -80,9 +80,9 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
     glUseProgram(shader_program);
 
     // set material properties
-    GLuint msloc  = glGetUniformLocation(shader_program, "m.s");
+    //GLuint msloc  = glGetUniformLocation(shader_program, "m.s");
     GLuint mseloc = glGetUniformLocation(shader_program, "m.se");
-    glUniform3f(msloc,  0.5f, 0.5f, 0.5f);
+    //glUniform3f(msloc,  0.5f, 0.5f, 0.5f);
     glUniform1f(mseloc, 32.0f);
 
     // set light properties
@@ -198,12 +198,17 @@ int main (int argc, char **argv)
     // load the textures
     //GLuint container_texture = make_texture("assets/container.jpg");
     //GLuint smile_texture = make_texture("assets/awesomeface.png");
-    GLuint texture = make_texture("assets/container2.png");
+    GLuint diffuse_map = make_texture("assets/container2.png");
+    GLuint spec_map = make_texture("assets/container2_specular.png");
 
-    //// activate the textures
+    // activate the textures
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, diffuse_map);
     glUniform1i(glGetUniformLocation(shader_program, "m.d"), 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, spec_map);
+    glUniform1i(glGetUniformLocation(shader_program, "m.s"), 1);
 
     //glActiveTexture(GL_TEXTURE1);
     //glBindTexture(GL_TEXTURE_2D, smile_texture);
@@ -227,7 +232,7 @@ int main (int argc, char **argv)
 
 #define POSITION_LOC 0
 #define NORMAL_LOC 1
-#define TEX_LOC 1
+#define TEX_LOC 2
     // Position attribute information
     glVertexAttribPointer(POSITION_LOC, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *) 0);
     glEnableVertexAttribArray(POSITION_LOC);

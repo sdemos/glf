@@ -2,7 +2,7 @@
 
 struct Material {
     sampler2D d;  // diffuse map
-    vec3      s;  // specular highlight properties
+    sampler2D s;  // specular highlight properties
     float     se; // specular exponent
 };
 
@@ -36,7 +36,7 @@ void main ()
 
     vec3 ambient  = l.a * vec3(texture(m.d, tex));
     vec3 diffuse  = l.d * diff * vec3(texture(m.d, tex));
-    vec3 specular = l.s * spec * m.s;
+    vec3 specular = l.s * spec * vec3(texture(m.s, tex));
 
     color = vec4(ambient + diffuse + specular, 1.0);
 }
