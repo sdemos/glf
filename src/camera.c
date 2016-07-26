@@ -11,11 +11,10 @@
 
 #include <bari.h>
 
+#include "camera.h"
+
 #include "glf.h"
 #include "keyboard.h"
-
-// camera postitions
-bari_vec3 camera_pos, camera_front, camera_up;
 
 // smooth out movement
 GLfloat delta_time = 0.0f;
@@ -147,25 +146,6 @@ void camera_move_right (GLFWwindow *window)
 bari_mat4 camera_view ()
 {
     return bari_lookat(camera_pos, bari_vsum3(camera_pos, camera_front), camera_up);
-}
-
-/**
- * camera_pos
- *
- * get the current camera position
- *
- * it should be possible to do lighting calculations without knowing the
- * position of the camera, but the tutorial I'm following doesn't do the
- * lighting calculations in eye space. I tried to get them to work in eye
- * space, but the light position kept moving with the camera, and I can't
- * figure out why.
- *
- * returns
- *  current camera position
- */
-bari_vec3 current_camera_pos ()
-{
-    return camera_pos;
 }
 
 /**
