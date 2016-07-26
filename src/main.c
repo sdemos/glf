@@ -66,6 +66,7 @@ GLfloat cubeVerts[] = {
 };
 
 bari_vec3 light_pos;
+bari_vec3 cubePositions[10];
 
 void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLuint lightVAO)
 {
@@ -90,25 +91,49 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
     GLuint ld = glGetUniformLocation(shader_program, "l.d");
     GLuint ls = glGetUniformLocation(shader_program, "l.s");
     GLuint lp = glGetUniformLocation(shader_program, "l.p");
+    GLuint lc = glGetUniformLocation(shader_program, "l.c");
+    GLuint ll = glGetUniformLocation(shader_program, "l.l");
+    GLuint lq = glGetUniformLocation(shader_program, "l.q");
+    GLuint ldir = glGetUniformLocation(shader_program, "l.direction");
+    GLuint lcut = glGetUniformLocation(shader_program, "l.cutoff");
+    GLuint loutcut = glGetUniformLocation(shader_program, "l.outercutoff");
     glUniform3f(la, 0.2f, 0.2f, 0.2f);
     glUniform3f(ld, 0.5f, 0.5f, 0.5f);
     glUniform3f(ls, 1.0f, 1.0f, 1.0f);
-    glUniform3f(lp, light_pos.x, light_pos.y, light_pos.z);
+    glUniform3f(lp, camera_pos.x, camera_pos.y, camera_pos.z);
+    glUniform1f(lc, 1.0f);
+    glUniform1f(ll, 0.09f);
+    glUniform1f(lq, 0.032f);
+    glUniform3f(ldir, camera_front.x, camera_front.y, camera_front.z);
+    glUniform1f(lcut, cos(DEG_TO_RAD(12.5f)));
+    glUniform1f(loutcut, cos(DEG_TO_RAD(17.5f)));
 
     // pass current camera position
-    bari_vec3 camera_pos = current_camera_pos();
     GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
     glUniform3f(camera_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z);
 
-    bari_mat4 shader_model  = bari_mat4_id;
-    bari_mat4 shader_mvp    = bari_mprod4(vp, shader_model);
+    //bari_mat4 shader_model  = bari_mat4_id;
+    //bari_mat4 shader_mvp    = bari_mprod4(vp, shader_model);
+    //GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
+    //GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
+    //glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_model));
+    //glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mvp));
+
     GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
     GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
-    glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_model));
-    glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mvp));
-
     glBindVertexArray(shaderVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    for (GLuint i = 0; i < 10; i++) {
+        float angle = DEG_TO_RAD(20.0f * i);
+        bari_mat4 translate = bari_translate(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z);
+        bari_mat4 rotate = bari_rotate(1.0f * angle, 0.3f * angle, 0.5f * angle);
+        bari_mat4 model = bari_mprod4(translate, rotate);
+        bari_mat4 mvp = bari_mprod4(vp, model);
+        glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(model));
+        glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(mvp));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glUseProgram(light_program);
 
@@ -166,7 +191,19 @@ GLFWwindow *glf_init ()
     glEnable(GL_DEPTH_TEST);
 
     // initialize lighting
+    //light_pos = bari_mkvec3(-0.2f, -1.0f, -0.3f);
     light_pos = bari_mkvec3(1.2f, 1.0f, 2.0f);
+
+    cubePositions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
+    cubePositions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
+    cubePositions[2] = bari_mkvec3(-1.5f, -2.2f, -2.5f);
+    cubePositions[3] = bari_mkvec3(-3.8f, -2.0f, -12.3f);
+    cubePositions[4] = bari_mkvec3( 2.4f, -0.4f, -3.5f);
+    cubePositions[5] = bari_mkvec3(-1.7f,  3.0f, -7.5f);
+    cubePositions[6] = bari_mkvec3( 1.3f, -2.0f, -2.5f);
+    cubePositions[7] = bari_mkvec3( 1.5f,  2.0f, -2.5f);
+    cubePositions[8] = bari_mkvec3( 1.5f,  0.2f, -1.5f);
+    cubePositions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
 
     return window;
 }
@@ -282,3 +319,4 @@ int main (int argc, char **argv)
     glfwTerminate();
     return 0;
 }
+
