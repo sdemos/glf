@@ -19,6 +19,7 @@
 #include "texture.h"
 #include "keyboard.h"
 #include "camera.h"
+#include "light.h"
 
 GLfloat cubeVerts[] = {
     // Positions         // Normals           // Texture Coords
@@ -65,8 +66,8 @@ GLfloat cubeVerts[] = {
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 
-bari_vec3 light_pos;
-bari_vec3 cubePositions[10];
+bari_vec3 point_lights[4];
+bari_vec3 cube_positions[10];
 
 void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLuint lightVAO)
 {
@@ -81,50 +82,77 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
     glUseProgram(shader_program);
 
     // set material properties
-    //GLuint msloc  = glGetUniformLocation(shader_program, "m.s");
     GLuint mseloc = glGetUniformLocation(shader_program, "m.se");
-    //glUniform3f(msloc,  0.5f, 0.5f, 0.5f);
     glUniform1f(mseloc, 32.0f);
 
-    // set light properties
-    GLuint la = glGetUniformLocation(shader_program, "l.a");
-    GLuint ld = glGetUniformLocation(shader_program, "l.d");
-    GLuint ls = glGetUniformLocation(shader_program, "l.s");
-    GLuint lp = glGetUniformLocation(shader_program, "l.p");
-    GLuint lc = glGetUniformLocation(shader_program, "l.c");
-    GLuint ll = glGetUniformLocation(shader_program, "l.l");
-    GLuint lq = glGetUniformLocation(shader_program, "l.q");
-    GLuint ldir = glGetUniformLocation(shader_program, "l.direction");
-    GLuint lcut = glGetUniformLocation(shader_program, "l.cutoff");
-    GLuint loutcut = glGetUniformLocation(shader_program, "l.outercutoff");
-    glUniform3f(la, 0.2f, 0.2f, 0.2f);
-    glUniform3f(ld, 0.5f, 0.5f, 0.5f);
-    glUniform3f(ls, 1.0f, 1.0f, 1.0f);
-    glUniform3f(lp, camera_pos.x, camera_pos.y, camera_pos.z);
-    glUniform1f(lc, 1.0f);
-    glUniform1f(ll, 0.09f);
-    glUniform1f(lq, 0.032f);
-    glUniform3f(ldir, camera_front.x, camera_front.y, camera_front.z);
-    glUniform1f(lcut, cos(DEG_TO_RAD(12.5f)));
-    glUniform1f(loutcut, cos(DEG_TO_RAD(17.5f)));
+    // set directional light properties
+    GLuint ddir = glGetUniformLocation(shader_program, "dir_light.direction");
+    GLuint da = glGetUniformLocation(shader_program, "dir_light.a");
+    GLuint dd = glGetUniformLocation(shader_program, "dir_light.d");
+    GLuint ds = glGetUniformLocation(shader_program, "dir_light.s");
+    glUniform3f(ddir, -0.2f, -1.0f, -0.3f);
+    glUniform3f(da, 0.2f, 0.2f, 0.2f);
+    glUniform3f(dd, 0.5f, 0.5f, 0.5f);
+    glUniform3f(ds, 1.0f, 1.0f, 1.0f);
+
+    // set point light properties
+    for (GLuint i = 0; i < 4; i++) {
+        char spp[20], spa[20], spd[20], sps[20], spc[20], spl[20], spq[20];
+        sprintf(spp, "point_lights[%d].p", i);
+        sprintf(spa, "point_lights[%d].a", i);
+        sprintf(spd, "point_lights[%d].d", i);
+        sprintf(sps, "point_lights[%d].s", i);
+        sprintf(spc, "point_lights[%d].c", i);
+        sprintf(spl, "point_lights[%d].l", i);
+        sprintf(spq, "point_lights[%d].q", i);
+        GLuint pp = glGetUniformLocation(shader_program, spp);
+        GLuint pa = glGetUniformLocation(shader_program, spa);
+        GLuint pd = glGetUniformLocation(shader_program, spd);
+        GLuint ps = glGetUniformLocation(shader_program, sps);
+        GLuint pc = glGetUniformLocation(shader_program, spc);
+        GLuint pl = glGetUniformLocation(shader_program, spl);
+        GLuint pq = glGetUniformLocation(shader_program, spq);
+        glUniform3f(pp, point_lights[i].x, point_lights[i].y, point_lights[i].z);
+        glUniform3f(pa, 0.2f, 0.2f, 0.2f);
+        glUniform3f(pd, 0.5f, 0.5f, 0.5f);
+        glUniform3f(ps, 1.0f, 1.0f, 1.0f);
+        glUniform1f(pc, 1.0f);
+        glUniform1f(pl, 0.09f);
+        glUniform1f(pq, 0.032f);
+    }
+
+    // set spotlight properties
+    GLuint sa = glGetUniformLocation(shader_program, "spotlight.a");
+    GLuint sd = glGetUniformLocation(shader_program, "spotlight.d");
+    GLuint ss = glGetUniformLocation(shader_program, "spotlight.s");
+    GLuint sp = glGetUniformLocation(shader_program, "spotlight.p");
+    GLuint sc = glGetUniformLocation(shader_program, "spotlight.c");
+    GLuint sl = glGetUniformLocation(shader_program, "spotlight.l");
+    GLuint sq = glGetUniformLocation(shader_program, "spotlight.q");
+    GLuint sdir = glGetUniformLocation(shader_program, "spotlight.direction");
+    GLuint scut = glGetUniformLocation(shader_program, "spotlight.cutoff");
+    GLuint soutcut = glGetUniformLocation(shader_program, "spotlight.outercutoff");
+    glUniform3f(sa, 0.2f, 0.2f, 0.2f);
+    glUniform3f(sd, 0.5f, 0.5f, 0.5f);
+    glUniform3f(ss, 1.0f, 1.0f, 1.0f);
+    glUniform3f(sp, camera_pos.x, camera_pos.y, camera_pos.z);
+    glUniform1f(sc, 1.0f);
+    glUniform1f(sl, 0.09f);
+    glUniform1f(sq, 0.032f);
+    glUniform3f(sdir, camera_front.x, camera_front.y, camera_front.z);
+    glUniform1f(scut, cos(DEG_TO_RAD(12.5f)));
+    glUniform1f(soutcut, cos(DEG_TO_RAD(17.5f)));
 
     // pass current camera position
     GLuint camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
     glUniform3f(camera_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z);
-
-    //bari_mat4 shader_model  = bari_mat4_id;
-    //bari_mat4 shader_mvp    = bari_mprod4(vp, shader_model);
-    //GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
-    //GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
-    //glUniformMatrix4fv(shader_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_model));
-    //glUniformMatrix4fv(shader_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(shader_mvp));
 
     GLuint shader_model_loc = glGetUniformLocation(shader_program, "model");
     GLuint shader_mvp_loc   = glGetUniformLocation(shader_program, "mvp");
     glBindVertexArray(shaderVAO);
     for (GLuint i = 0; i < 10; i++) {
         float angle = DEG_TO_RAD(20.0f * i);
-        bari_mat4 translate = bari_translate(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z);
+        bari_mat4 translate = bari_translate(cube_positions[i].x, cube_positions[i].y, cube_positions[i].z);
         bari_mat4 rotate = bari_rotate(1.0f * angle, 0.3f * angle, 0.5f * angle);
         bari_mat4 model = bari_mprod4(translate, rotate);
         bari_mat4 mvp = bari_mprod4(vp, model);
@@ -133,21 +161,21 @@ void display (GLuint shader_program, GLuint shaderVAO, GLuint light_program, GLu
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    //glDrawArrays(GL_TRIANGLES, 0, 36);
-
     glUseProgram(light_program);
 
-    bari_mat4 light_translate = bari_translate(light_pos.x, light_pos.y, light_pos.z);
-    bari_mat4 light_scale     = bari_scale(0.2f, 0.2f, 0.2f);
-    bari_mat4 light_model = bari_mprod4(light_translate, light_scale);
-    bari_mat4 light_mvp   = bari_mprod4(vp, light_model);
-    GLuint light_model_loc = glGetUniformLocation(shader_program, "model");
-    GLuint light_mvp_loc  = glGetUniformLocation(light_program, "mvp");
-    glUniformMatrix4fv(light_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_model));
-    glUniformMatrix4fv(light_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_mvp));
-
+    bari_mat4 light_scale  = bari_scale(0.2f, 0.2f, 0.2f);
+    GLuint light_model_loc = glGetUniformLocation(light_program, "model");
+    GLuint light_mvp_loc   = glGetUniformLocation(light_program, "mvp");
     glBindVertexArray(lightVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    for (GLuint i = 0; i < 4; i++) {
+        bari_mat4 light_translate = bari_translate(point_lights[i].x, point_lights[i].y, point_lights[i].z);
+        bari_mat4 light_model = bari_mprod4(light_translate, light_scale);
+        bari_mat4 light_mvp   = bari_mprod4(vp, light_model);
+        glUniformMatrix4fv(light_model_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_model));
+        glUniformMatrix4fv(light_mvp_loc, 1, GL_FALSE, BARI_VALUE_PTR(light_mvp));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
     glBindVertexArray(0);
 }
@@ -192,18 +220,22 @@ GLFWwindow *glf_init ()
 
     // initialize lighting
     //light_pos = bari_mkvec3(-0.2f, -1.0f, -0.3f);
-    light_pos = bari_mkvec3(1.2f, 1.0f, 2.0f);
+    //light_pos = bari_mkvec3(1.2f, 1.0f, 2.0f);
+    point_lights[0] = bari_mkvec3( 0.7f,  0.2f,  2.0f);
+    point_lights[1] = bari_mkvec3( 2.3f, -3.3f, -4.0f);
+    point_lights[2] = bari_mkvec3(-4.0f,  2.0f, -12.0f);
+    point_lights[3] = bari_mkvec3( 0.0f,  0.0f, -3.0f);
 
-    cubePositions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
-    cubePositions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
-    cubePositions[2] = bari_mkvec3(-1.5f, -2.2f, -2.5f);
-    cubePositions[3] = bari_mkvec3(-3.8f, -2.0f, -12.3f);
-    cubePositions[4] = bari_mkvec3( 2.4f, -0.4f, -3.5f);
-    cubePositions[5] = bari_mkvec3(-1.7f,  3.0f, -7.5f);
-    cubePositions[6] = bari_mkvec3( 1.3f, -2.0f, -2.5f);
-    cubePositions[7] = bari_mkvec3( 1.5f,  2.0f, -2.5f);
-    cubePositions[8] = bari_mkvec3( 1.5f,  0.2f, -1.5f);
-    cubePositions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
+    cube_positions[0] = bari_mkvec3( 0.0f,  0.0f,  0.0f);
+    cube_positions[1] = bari_mkvec3( 2.0f,  5.0f, -15.0f);
+    cube_positions[2] = bari_mkvec3(-1.5f, -2.2f, -2.5f);
+    cube_positions[3] = bari_mkvec3(-3.8f, -2.0f, -12.3f);
+    cube_positions[4] = bari_mkvec3( 2.4f, -0.4f, -3.5f);
+    cube_positions[5] = bari_mkvec3(-1.7f,  3.0f, -7.5f);
+    cube_positions[6] = bari_mkvec3( 1.3f, -2.0f, -2.5f);
+    cube_positions[7] = bari_mkvec3( 1.5f,  2.0f, -2.5f);
+    cube_positions[8] = bari_mkvec3( 1.5f,  0.2f, -1.5f);
+    cube_positions[9] = bari_mkvec3(-1.3f,  1.0f, -1.5f);
 
     return window;
 }
